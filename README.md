@@ -1,14 +1,16 @@
-# Project
+# XNAT on Azure
 
-> This repo has been populated by an initial template to help get you started. Please
-> make sure to update the content to build a great experience for community-building.
+The goal of this repository is to provide code, templates and best practices for deploying [XNAT](https://xnat.org/about/) on Azure. 
 
-As the maintainer of this project, please make a few updates:
 
-- Improving this README.MD file to provide a great experience
-- Updating SUPPORT.MD with content about this project's support experience
-- Understanding the security reporting process in SECURITY.MD
-- Remove this section from the README
+# Overview
+![xnat overview](./images/XNAT%20Diagrams.jpg)
+
+1. Deployment
+2. Loading Images
+3. Setting up a project
+4. Pushing annotations
+5. Training ML Model on Azure ML
 
 ## Contributing
 
