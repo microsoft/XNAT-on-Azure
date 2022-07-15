@@ -24,7 +24,10 @@ RUN rm -f /tmp/xnat-web-${XNAT_VERSION}.war
  
 RUN wget --no-verbose --output-document=/root/ohif-viewer.jar https://bitbucket.org/icrimaginginformatics/ohif-viewer-xnat-plugin/downloads/ohif-viewer-${XNAT_OHIF_VERSION}.jar 
 
+# HTTP Port
 EXPOSE 80
+
+# DICOM Port
 EXPOSE 8104
 
 ENV XNAT_ROOT=${XNAT_ROOT} XNAT_HOME=${XNAT_HOME} XNAT_DATASOURCE_USERNAME=${XNAT_DATASOURCE_USERNAME} PGPASSWORD=${XNAT_DATASOURCE_PASSWORD}
