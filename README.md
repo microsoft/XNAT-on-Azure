@@ -8,8 +8,8 @@ The goal of this repository is to provide code, templates and best practices for
 
 1. [Deployment](1_deployment/README.md)
 2. [Loading Images](2_Loading_Images/README.md)
-3. Setting up a project
-4. Pushing annotations
+3. [Setting up a project]()
+4. Annotations
 5. Training ML Model on Azure ML
 
 ## Contributing

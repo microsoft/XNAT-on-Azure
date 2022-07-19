@@ -22,9 +22,9 @@ docker build -t <your_docker_image_name> .
 
 ### 2. Publish docker image to a registry
 ```
-docker push
+docker push <your_docker_image>
 ```
 ### 3. Deploy ARM temlate
 ```
-az ...
+az deployment group create --resource-group <your_resource_group> --template-file .\arm\xnat.json --parameters administratorLogin=<your_sql_user> administratorLoginPassword=<your_sql_password> acrName=<your_azure_container_registry> acrPassword=<your_acr_password> acrUsername=<your_acr_username> acrDockerImage=<docker_image_pushed_in_step_2>
 ```
