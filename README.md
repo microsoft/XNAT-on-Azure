@@ -1,4 +1,5 @@
 # XNAT on Azure
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https%3A%2F%2Fraw.githubusercontent.com%2Fmicrosoft%2FXNAT-on-Azure%2Fganesh%2Finit%2F1_Deployment%2Farm%2Fxnat.json%3Ftoken%3DGHSAT0AAAAAABPVIOZK6VKJMKSG4OO5AJZQYXUJD4Q)
 
 The goal of this repository is to provide code, templates and best practices for deploying [XNAT](https://xnat.org/about/) on Azure. 
 
@@ -11,7 +12,7 @@ The goal of this repository is to provide code, templates and best practices for
 3. [Setting up a project](3_Setting_up_project/README.md)
 4. Annotations
 5. [Programmatic access to data](5_Programmatic_Access/README.md)
-6. Training ML Model on Azure ML
+6. [Training ML Model on Azure ML](6_Training_Model_On_Azure_ML/README.md)
 
 ## Contributing
 
