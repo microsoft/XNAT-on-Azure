@@ -1,3 +1,4 @@
 .xnat
 .env
 postgres-data
+deploy.ps1
