@@ -7,7 +7,7 @@
             "defaultValue": "[concat('XNAT-ci', uniqueString(resourceGroup().id))]",
             "minLength": 2,
             "metadata": {
-                "description": "XNAT webapp name"
+                "description": "XNAT container instance name"
             }
         },
         "postgresServerName": {
@@ -68,24 +68,6 @@
             "type": "int",
             "defaultValue": 4
         },
-        "acrName": {
-            "type": "string",
-            "metadata": {
-                "description": "Name of Azure container registry where XNAT docker image is stored"
-            }
-        },
-        "acrPassword": {
-            "type": "securestring",
-            "metadata": {
-                "description": "Azure container registry password."
-            }
-        },
-        "acrUsername": {
-            "type": "string",
-            "metadata": {
-                "description": "Azure container registry username."
-            }
-        },
         "postgresqlVersion": {
             "type": "string",
             "allowedValues": [
@@ -116,11 +98,12 @@
                 "description": "Storage Account type"
             }
         },
-        "acrDockerImage": {
+        "dockerImage": {
             "type": "string",
             "metadata": {
                 "description": "Docker image url"
-            }
+            },
+            "defaultValue": "medimagingai.azurecr.io/xnat:1.8.3"
         },
         "xnatShareName": {
             "type": "string", 
@@ -212,7 +195,7 @@
                     {
                         "name": "xnat-container",
                         "properties": {
-                            "image": "[parameters('acrDockerImage')]",
+                            "image": "[parameters('dockerImage')]",
                             "environmentVariables": [
                                 {
                                     "name": "CATALINA_OPTS",
@@ -277,13 +260,6 @@
                                 }
                             ]
                         }
-                    }
-                ],
-                "imageRegistryCredentials": [
-                    {
-                        "password": "[parameters('acrPassword')]",
-                        "server": "[parameters('acrName')]",
-                        "username": "[parameters('acrUsername')]"
                     }
                 ],
                 "osType": "Linux",
