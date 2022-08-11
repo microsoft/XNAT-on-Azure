@@ -1,20 +1,19 @@
 # XNAT on Azure
 [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fganeshiyer-ms%2Fxnat%2Fmain%2Fxnat.json)
 
-
-
 The goal of this repository is to provide code, templates and best practices for deploying [XNAT](https://xnat.org/about/) on Azure. 
 
 
 # Overview
 ![xnat overview](./images/XNAT%20Diagrams.jpg)
 
-1. [Deployment](1_deployment/README.md)
-2. [Loading Images](2_Loading_Images/README.md)
-3. [Setting up a project](3_Setting_up_project/README.md)
-4. Annotations
-5. [Programmatic access to data](5_Programmatic_Access/README.md)
-6. [Training ML Model on Azure ML](6_Training_Model_On_Azure_ML/README.md)
+
+The repository is organized in `src` and `docs` directory. The `src` directory contains code for building the docker container and ARM templates. The `docs` directory contains the following:
+
+1. [Loading Images](./docs/1_Loading_Images/README.md)
+2. [Setting up a project](./docs/2_Setting_up_project/README.md)
+3. [Programmatic access to data](./docs/3_Programmatic_Access/README.md)
+4. [Training ML Model on Azure ML](./docs/4_Training_Model_On_Azure_ML/README.md)
 
 ## Contributing
 
