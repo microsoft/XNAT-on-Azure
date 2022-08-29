@@ -4,3 +4,6 @@ Data stored within XNAT is organized according to projects. We will be using XNA
 
 XNAT's documentation provides a detailed overview of [creating a project](https://wiki.xnat.org/documentation/how-to-use-xnat/creating-and-managing-projects)
 
+
+The [setup jupyter notebook](setup.ipynb) provides an overview on how to store and organize labels on XNAT
+
