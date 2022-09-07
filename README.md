@@ -1,5 +1,5 @@
 # XNAT on Azure
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fganeshiyer-ms%2Fxnat%2Fmain%2Fxnat.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fganeshiyer-ms%2Fxnatazure%2Fganesh%2Finit%2Fsrc%2Farm%2Fxnat.ui.json)
 
 The goal of this repository is to provide code, templates and best practices for deploying [XNAT](https://xnat.org/about/) on Azure. 
 
