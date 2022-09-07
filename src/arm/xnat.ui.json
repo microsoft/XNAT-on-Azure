@@ -1,0 +1,300 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "xnatCIName": {
+            "type": "string",
+            "minLength": 2,
+            "metadata": {
+                "description": "XNAT container instance name"
+            }
+        },
+        "postgresServerName": {
+            "type": "string",
+            "minLength": 3,
+            "metadata": {
+                "description": "XNAT postgres server name"
+            }
+        },
+        "databaseStorageSizeGB": {
+            "type": "int",
+            "defaultValue": 32,
+            "metadata": {
+                "description": "Azure database for PostgreSQL storage size in GB"
+            }
+        },
+        "administratorLogin": {
+            "type": "string",
+            "minLength": 1,
+            "metadata": {
+                "description": "Database administrator login name"
+            }
+        },
+        "administratorLoginPassword": {
+            "type": "securestring",
+            "minLength": 8,
+            "maxLength": 128,
+            "metadata": {
+                "description": "Database administrator password"
+            }
+        },
+        "databaseSkuName": {
+            "type": "string",
+            "defaultValue": "GP_Gen5_4",
+            "allowedValues": [
+                "GP_Gen5_4"
+            ],
+            "metadata": {
+                "description": "Azure database for PostgreSQL sku name "
+            }
+        },
+        "databaseSkuFamily": {
+            "type": "string",
+            "defaultValue": "Gen5",
+            "allowedValues": [
+                "Gen5"
+            ]
+        },
+        "databaseSkuTier": {
+            "type": "string",
+            "defaultValue": "GeneralPurpose",
+            "allowedValues": [
+                "GeneralPurpose"
+            ]
+        },
+        "databaseSkuCapacity": {
+            "type": "int",
+            "defaultValue": 4
+        },
+        "postgresqlVersion": {
+            "type": "string",
+            "allowedValues": [
+                "11"
+            ],
+            "defaultValue": "11",
+            "metadata": {
+                "description": "PostgreSQL version"
+            }
+        },
+
+        "storageAccountName": {
+            "type": "string",
+            "metadata": {
+                "description": "XNAT storage account name"
+            }
+        },
+        "storageAccountType": {
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+                "Standard_LRS",
+                "Standard_GRS",
+                "Standard_ZRS"
+            ],
+            "metadata": {
+                "description": "Storage Account type"
+            }
+        },
+        "dockerImage": {
+            "type": "string",
+            "metadata": {
+                "description": "Docker image url"
+            },
+            "defaultValue": "medimagingai.azurecr.io/xnat:1.8.3"
+        },
+        "xnatShareName": {
+            "type": "string", 
+            "defaultValue": "xnat-share"
+        }
+    },
+    "variables": {
+        "databaseName": "postgres",
+        "xnatVolumeName": "xnatvolume",
+        "xnatHomeDir": "/xnat/home",
+        "catalinaOpts": "[concat('-Xms256m -Xmx16g -Dxnat.home=', variables('xnatHomeDir'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.DBforPostgreSQL/servers",
+            "apiVersion": "2017-12-01",
+            "location": "[resourceGroup().location]",
+            "name": "[parameters('postgresServerName')]",
+            "sku": {
+                "name": "[parameters('databaseSkuName')]",
+                "tier": "[parameters('databaseSkuTier')]",
+                "family": "[parameters('databaseSkuFamily')]",
+                "capacity": "[parameters('databaseSkuCapacity')]"
+            },
+            "resources": [
+                {
+                    "type": "firewallrules",
+                    "apiVersion": "2017-12-01",
+                    "name": "[concat(parameters('postgresServerName'),'firewall')]",
+                    "location": "[resourceGroup().location]",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.DBforPostgreSQL/servers',parameters('postgresServerName'))]"
+                    ],
+                    "properties": {
+                        "startIpAddress": "0.0.0.0",
+                        "endIpAddress": "255.255.255.255"
+                    }
+                }
+            ],
+            "properties": {
+                "version": "[parameters('postgresqlVersion')]",
+                "administratorLogin": "[parameters('administratorLogin')]",
+                "administratorLoginPassword": "[parameters('administratorLoginPassword')]",
+                "availabilityZone": "1",
+                "storage": {
+                    "storageSizeGB": "[parameters('databaseStorageSizeGB')]"
+                },
+                "backup": {
+                    "backupRetentionDays": 7,
+                    "geoRedundantBackup": "Disabled"
+                },
+                "highAvailability": {
+                    "mode": "Disabled"
+                },
+                "maintenanceWindow": {
+                    "customWindow": "Disabled",
+                    "dayOfWeek": 0,
+                    "startHour": 0,
+                    "startMinute": 0
+                },
+                "createMode": "Default"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-04-01",
+            "name": "[parameters('storageAccountName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "[parameters('storageAccountType')]"
+            },
+            "kind": "StorageV2"
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
+            "apiVersion": "2019-06-01",
+            "name": "[concat(parameters('storageAccountName'), '/default/', parameters('xnatShareName'))]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ]
+        },
+        {
+            "name": "[parameters('xnatCIName')]",
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "apiVersion": "2018-04-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "containers": [
+                    {
+                        "name": "xnat-container",
+                        "properties": {
+                            "image": "[parameters('dockerImage')]",
+                            "environmentVariables": [
+                                {
+                                    "name": "CATALINA_OPTS",
+                                    "value": "[variables('catalinaOpts')]"
+                                },
+                                {
+                                    "name": "TOMCAT_XNAT_FOLDER",
+                                    "value": "ROOT"
+                                },
+                                {
+                                    "name": "XNAT_DATASOURCE_DBNAME",
+                                    "value": "postgres"
+                                },
+                                {
+                                    "name": "XNAT_DATASOURCE_DRIVER",
+                                    "value": "org.postgresql.Driver"
+                                },
+                                {
+                                    "name": "XNAT_DATASOURCE_HOST",
+                                    "value": "[reference(resourceId('Microsoft.DBforPostgreSQL/servers', parameters('postgresServerName'))).fullyQualifiedDomainName]"
+                                },
+                                {
+                                    "name": "XNAT_DATASOURCE_PASSWORD",
+                                    "value": "[parameters('administratorLoginPassword')]"
+                                },
+                                {
+                                    "name": "XNAT_DATASOURCE_URL",
+                                    "value": "[concat('jdbc:postgresql://', reference(resourceId('Microsoft.DBforPostgreSQL/servers', parameters('postgresServerName'))).fullyQualifiedDomainName, ':5432/', variables('databaseName'), '?sslmode=require')]"
+                                },
+                                {
+                                    "name": "XNAT_DATASOURCE_USERNAME",
+                                    "value": "[concat(parameters('administratorLogin'), '@', reference(resourceId('Microsoft.DBforPostgreSQL/servers', parameters('postgresServerName'))).fullyQualifiedDomainName)]"
+                                },
+                                {
+                                    "name": "XNAT_HOME",
+                                    "value": "[variables('xnatHomeDir')]"
+                                },
+                                {
+                                    "name": "XNAT_ROOT",
+                                    "value": "/data/xnat"
+                                }
+                            ],
+                            "ports": [
+                                {
+                                    "port": 80
+                                },
+                                {
+                                    "port": 8104
+                                }
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "cpu": 4,
+                                    "memoryInGb": 16
+                                }
+                            },
+
+                            "volumeMounts": [
+                                {
+                                    "mountPath": "/data/xnat",
+                                    "name": "[variables('xnatVolumeName')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "osType": "Linux",
+                "ipAddress": {
+                    "type": "Public",
+                    "dnsNameLabel": "[parameters('xnatCIName')]",
+                    "ports": [
+                        {
+                            "protocol": "tcp",
+                            "port": 80
+                        },
+                        {
+                            "protocol": "tcp",
+                            "port": 8104
+                        }
+                    ]
+                },
+                "volumes": [
+                    {
+                        "azureFile": {
+                            "shareName": "[parameters('xnatShareName')]",
+                            "storageAccountKey": "[listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2021-04-01').keys[0].value]",
+                            "storageAccountName": "[parameters('storageAccountName')]"
+                        },
+                        "name": "[variables('xnatVolumeName')]"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('postgresServerName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+            ]
+        }
+    ],
+    "outputs": {
+        "siteFQDN": {
+            "type": "string",
+            "value": "[reference(resourceId('Microsoft.ContainerInstance/containerGroups', parameters('xnatCIName'))).ipAddress.fqdn]"
+        }
+    }
+}
