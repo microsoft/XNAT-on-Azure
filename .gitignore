@@ -1,0 +1,6 @@
+.xnat
+.env
+postgres-data
+deploy.ps1
+venv
+.ipynb_checkpoints
