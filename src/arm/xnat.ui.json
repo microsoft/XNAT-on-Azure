@@ -110,7 +110,7 @@
     "variables": {
         "databaseName": "postgres",
         "xnatVolumeName": "xnatvolume",
-        "xnatHomeDir": "/xnat/home",
+        "xnatHomeDir": "/data/xnat/home",
         "catalinaOpts": "[concat('-Xms256m -Xmx16g -Dxnat.home=', variables('xnatHomeDir'))]"
     },
     "resources": [
