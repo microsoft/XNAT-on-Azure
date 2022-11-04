@@ -7,7 +7,11 @@ mkdir -p ${XNAT_ROOT}/archive \
         ${XNAT_ROOT}/cache \
         ${XNAT_ROOT}/ftp \
         ${XNAT_ROOT}/pipeline \
-        ${XNAT_ROOT}/prearchive
+        ${XNAT_ROOT}/prearchive \
+	      ${XNAT_HOME}/config \
+        ${XNAT_HOME}/logs \
+        ${XNAT_HOME}/plugins \
+        ${XNAT_HOME}/work
 
 
 export PGPASSWORD=$XNAT_DATASOURCE_PASSWORD
