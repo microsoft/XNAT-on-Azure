@@ -40,9 +40,9 @@
         },
         "databaseSkuName": {
             "type": "string",
-            "defaultValue": "GP_Gen5_4",
+            "defaultValue": "Standard_B4ms",
             "allowedValues": [
-                "GP_Gen5_4"
+                "Standard_B4ms"
             ],
             "metadata": {
                 "description": "Azure database for PostgreSQL sku name "
@@ -57,9 +57,9 @@
         },
         "databaseSkuTier": {
             "type": "string",
-            "defaultValue": "GeneralPurpose",
+            "defaultValue": "Burstable",
             "allowedValues": [
-                "GeneralPurpose"
+                "Burstable"
             ]
         },
         "databaseSkuCapacity": {
@@ -69,9 +69,10 @@
         "postgresqlVersion": {
             "type": "string",
             "allowedValues": [
-                "11"
+                "11",
+                "13"
             ],
-            "defaultValue": "11",
+            "defaultValue": "13",
             "metadata": {
                 "description": "PostgreSQL version"
             }
@@ -115,8 +116,8 @@
     },
     "resources": [
         {
-            "type": "Microsoft.DBforPostgreSQL/servers",
-            "apiVersion": "2017-12-01",
+            "type": "Microsoft.DBforPostgreSQL/flexibleServers",
+            "apiVersion": "2021-06-01",
             "location": "[resourceGroup().location]",
             "name": "[parameters('postgresServerName')]",
             "sku": {
@@ -127,12 +128,12 @@
             },
             "resources": [
                 {
-                    "type": "firewallrules",
-                    "apiVersion": "2017-12-01",
+                    "type": "firewallRules",
+                    "apiVersion": "2021-06-01",
                     "name": "[concat(parameters('postgresServerName'),'firewall')]",
                     "location": "[resourceGroup().location]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.DBforPostgreSQL/servers',parameters('postgresServerName'))]"
+                        "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers',parameters('postgresServerName'))]"
                     ],
                     "properties": {
                         "startIpAddress": "0.0.0.0",
@@ -212,7 +213,7 @@
                                 },
                                 {
                                     "name": "XNAT_DATASOURCE_HOST",
-                                    "value": "[reference(resourceId('Microsoft.DBforPostgreSQL/servers', parameters('postgresServerName'))).fullyQualifiedDomainName]"
+                                    "value": "[reference(resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('postgresServerName'))).fullyQualifiedDomainName]"
                                 },
                                 {
                                     "name": "XNAT_DATASOURCE_PASSWORD",
@@ -220,11 +221,11 @@
                                 },
                                 {
                                     "name": "XNAT_DATASOURCE_URL",
-                                    "value": "[concat('jdbc:postgresql://', reference(resourceId('Microsoft.DBforPostgreSQL/servers', parameters('postgresServerName'))).fullyQualifiedDomainName, ':5432/', variables('databaseName'), '?sslmode=require')]"
+                                    "value": "[concat('jdbc:postgresql://', reference(resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('postgresServerName'))).fullyQualifiedDomainName, ':5432/', variables('databaseName'), '?sslmode=require')]"
                                 },
                                 {
                                     "name": "XNAT_DATASOURCE_USERNAME",
-                                    "value": "[concat(parameters('administratorLogin'), '@', reference(resourceId('Microsoft.DBforPostgreSQL/servers', parameters('postgresServerName'))).fullyQualifiedDomainName)]"
+                                    "value": "[concat(parameters('administratorLogin'))]"
                                 },
                                 {
                                     "name": "XNAT_HOME",
@@ -246,7 +247,7 @@
                             "resources": {
                                 "requests": {
                                     "cpu": 4,
-                                    "memoryInGb": 16
+                                    "memoryInGB": 16
                                 }
                             },
 
@@ -265,11 +266,11 @@
                     "dnsNameLabel": "[parameters('xnatCIName')]",
                     "ports": [
                         {
-                            "protocol": "tcp",
+                            "protocol": "TCP",
                             "port": 80
                         },
                         {
-                            "protocol": "tcp",
+                            "protocol": "TCP",
                             "port": 8104
                         }
                     ]
@@ -286,7 +287,7 @@
                 ]
             },
             "dependsOn": [
-                "[resourceId('Microsoft.DBforPostgreSQL/servers', parameters('postgresServerName'))]",
+                "[resourceId('Microsoft.DBforPostgreSQL/flexibleServers', parameters('postgresServerName'))]",
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
             ]
         }
